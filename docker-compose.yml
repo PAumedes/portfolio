@@ -1,0 +1,80 @@
+version: '3.8'
+
+services:
+  app:
+    build:
+      context: ./docker/app
+    container_name: ${APP_NAME:-portfolio}_app
+    volumes:
+      - .:/var/www/html
+    networks:
+      - portfolio_network
+    depends_on:
+      - db
+      - redis
+    env_file:
+      - .env
+    security_opt:
+      - no-new-privileges:true
+
+  web:
+    build:
+      context: ./docker/web
+    container_name: ${APP_NAME:-portfolio}_web
+    ports:
+      - "${APP_PORT:-8000}:80"
+    volumes:
+      - .:/var/www/html
+    networks:
+      - portfolio_network
+    depends_on:
+      - app
+    security_opt:
+      - no-new-privileges:true
+
+  db:
+    build:
+      context: ./docker/db
+    container_name: ${APP_NAME:-portfolio}_db
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${DB_DATABASE}
+      MYSQL_USER: ${DB_USERNAME}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
+    volumes:
+      - db_data:/var/lib/mysql
+    networks:
+      - portfolio_network
+    security_opt:
+      - no-new-privileges:true
+
+  redis:
+    build:
+      context: ./docker/redis
+    container_name: ${APP_NAME:-portfolio}_redis
+    networks:
+      - portfolio_network
+    security_opt:
+      - no-new-privileges:true
+
+  node:
+    build:
+      context: ./docker/node
+    container_name: ${APP_NAME:-portfolio}_node
+    volumes:
+      - .:/var/www/html
+    command: npm run dev
+    tty: true
+    ports:
+      - "${VITE_PORT:-5173}:5173"
+    networks:
+      - portfolio_network
+    security_opt:
+      - no-new-privileges:true
+
+networks:
+  portfolio_network:
+    driver: bridge
+
+volumes:
+  db_data:
