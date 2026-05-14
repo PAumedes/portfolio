@@ -20,7 +20,7 @@ const { galleryRefs } = useReveal();
 
         <div class="masonry-grid max-w-7xl mx-auto gap-px bg-zinc-800 border border-zinc-800" role="region" aria-label="Portfolio gallery">
             <article
-                v-for="work in works.data"
+                v-for="work in works"
                 :key="work.id"
                 ref="galleryRefs"
                 class="masonry-item reveal-item relative overflow-hidden bg-zinc-950 group focus-within:ring-2 focus-within:ring-white focus-within:ring-offset-2 focus-within:ring-offset-zinc-950"
