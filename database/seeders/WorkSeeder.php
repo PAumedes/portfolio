@@ -5,6 +5,7 @@ namespace Database\Seeders;
 use App\Models\Work;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Str;
+use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
 class WorkSeeder extends Seeder
 {
@@ -17,21 +18,22 @@ class WorkSeeder extends Seeder
             [
                 'title' => 'Coastal Brutalism',
                 'description' => 'A stark, minimalist residential project overlooking the Mediterranean, focusing on raw concrete textures and geometric purity.',
-                'images' => ['arch.png', 'interior.png', 'abstract.png'],
             ],
             [
                 'title' => 'The Monolith Interior',
                 'description' => 'Concept interior for a flagship gallery, utilizing dark walnut, polished Nero Marquina marble, and sculptural furniture.',
-                'images' => ['interior.png', 'abstract.png', 'arch.png'],
             ],
             [
                 'title' => 'Iridescent Form',
                 'description' => 'An abstract digital exploration of glass and light, designed for a luxury brand identity concept.',
-                'images' => ['abstract.png', 'arch.png', 'interior.png'],
             ],
         ];
 
-        $availableImages = ['arch.png', 'interior.png', 'abstract.png'];
+        $availableImages = [
+            ['name' => 'arch', 'file' => 'arch.png'],
+            ['name' => 'interior', 'file' => 'interior.png'],
+            ['name' => 'abstract', 'file' => 'abstract.png'],
+        ];
 
         foreach ($samples as $sample) {
             $work = Work::updateOrCreate(
@@ -42,33 +44,25 @@ class WorkSeeder extends Seeder
                 ]
             );
 
-            // Clear existing media
-            $work->clearMediaCollection('default');
-
-            // Create 7 media records in the database (without actual files)
+            // Create 7 media records per work
             for ($i = 0; $i < 7; $i++) {
-                $imageName = $availableImages[$i % count($availableImages)];
+                $image = $availableImages[$i % count($availableImages)];
 
-                try {
-                    // Create database record directly without file upload
-                    \Spatie\MediaLibrary\MediaCollections\Models\Media::create([
-                        'model_type' => 'App\\Models\\Work',
-                        'model_id' => $work->id,
-                        'collection_name' => 'default',
-                        'name' => pathinfo($imageName, PATHINFO_FILENAME),
-                        'file_name' => $imageName,
-                        'mime_type' => 'image/jpeg',
-                        'disk' => 'public',
-                        'size' => 0,
-                        'manipulations' => json_encode([]),
-                        'custom_properties' => json_encode([]),
-                        'generated_conversions' => json_encode(['thumb' => true, 'preview' => true, 'preview_fallback' => true]),
-                        'responsive_images' => json_encode([]),
-                        'order_column' => $i + 1,
-                    ]);
-                } catch (\Exception $e) {
-                    \Illuminate\Support\Facades\Log::warning("Failed to create media record for work {$work->id}: " . $e->getMessage());
-                }
+                Media::create([
+                    'model_type' => Work::class,
+                    'model_id' => $work->id,
+                    'collection_name' => 'default',
+                    'name' => $image['name'],
+                    'file_name' => $image['file'],
+                    'mime_type' => 'image/png',
+                    'disk' => 'public',
+                    'size' => 0,
+                    'manipulations' => '[]',
+                    'custom_properties' => '{}',
+                    'generated_conversions' => '{}',
+                    'responsive_images' => '[]',
+                    'order_column' => $i + 1,
+                ]);
             }
         }
     }
