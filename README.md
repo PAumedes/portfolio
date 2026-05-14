@@ -37,41 +37,38 @@ git clone <repository-url>
 cd portfolio
 ```
 
-### 2. Start the Development Server
+### 2. Check `.env` File
 
-First time only:
+The `.env` file is already in the repo. Just verify it exists:
+
+```bash
+ls .env
+```
+
+If missing, create it with your database and Redis credentials.
+
+### 3. Start Everything
+
 ```bash
 docker compose -f docker-compose.yml -f docker-compose.dev.yml up -d --build
 ```
 
-After that:
-```bash
-docker compose -f docker-compose.yml -f docker-compose.dev.yml up -d
-```
-
-### 3. Set Up the Database
+Wait 10 seconds for services to start. Then:
 
 ```bash
 docker exec portfolio_app composer install
 docker exec portfolio_app php artisan key:generate
 docker exec portfolio_app php artisan migrate
 docker exec portfolio_app php artisan db:seed
-```
-
-### 4. Install Frontend Assets
-
-```bash
 docker exec portfolio_node npm install
 ```
 
-The dev server starts automatically. You'll see hot reload working.
-
-### 5. Open Your Browser
+### 4. Open Your Browser
 
 - **Portfolio**: http://localhost:8080
 - **Admin**: http://localhost:8080/admin
 
-Done! Start editing files and refresh your browser to see changes.
+Done! Edit files and refresh to see changes (hot reload works automatically).
 
 ## Common Commands
 
