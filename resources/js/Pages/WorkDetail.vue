@@ -70,21 +70,6 @@ const selectedImage = computed(() =>
             </div>
         </div>
 
-        <!-- Contact Section -->
-        <div class="border-t border-zinc-800 bg-zinc-900/50">
-            <div class="max-w-6xl mx-auto px-4 md:px-8 py-16 text-center">
-                <h2 class="text-3xl font-bold mb-4">Interested in working together?</h2>
-                <p class="text-zinc-400 mb-8 text-lg">
-                    Let's discuss your next project or collaboration.
-                </p>
-                <Link
-                    href="/contact"
-                    class="inline-block px-8 py-3 bg-white text-zinc-950 rounded-lg font-medium hover:bg-zinc-200 transition-colors"
-                >
-                    Get in Touch
-                </Link>
-            </div>
-        </div>
     </div>
 
     <Footer />
