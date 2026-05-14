@@ -1,6 +1,7 @@
 <script setup>
 import { Head, Link } from '@inertiajs/vue3';
 import { useReveal } from '@/Composables/useReveal';
+import Footer from '@/Components/Footer.vue';
 
 defineProps({
     works: Object,
@@ -30,7 +31,8 @@ const { galleryRefs } = useReveal();
                     role="link"
                     tabindex="0"
                     :aria-label="`View ${work.title} project`"
-                    @keydown.enter="$router.visit(route('contact.show'))"
+                    @click="$router.visit(route('work.show', work.slug))"
+                    @keydown.enter="$router.visit(route('work.show', work.slug))"
                 >
                     <picture v-if="work.media && work.media.length > 0" class="block">
                         <source :srcset="work.media[0].preview" type="image/avif" />
@@ -62,6 +64,8 @@ const { galleryRefs } = useReveal();
             </div>
         </Link>
     </div>
+
+    <Footer />
 </template>
 
 <style scoped>
