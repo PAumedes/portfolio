@@ -15,45 +15,27 @@ class WorkSeeder extends Seeder
     public function run(): void
     {
         $samples = [
-            [
-                'title' => 'Coastal Brutalism',
-                'description' => 'A stark, minimalist residential project overlooking the Mediterranean, focusing on raw concrete textures and geometric purity.',
-            ],
-            [
-                'title' => 'The Monolith Interior',
-                'description' => 'Concept interior for a flagship gallery, utilizing dark walnut, polished Nero Marquina marble, and sculptural furniture.',
-            ],
-            [
-                'title' => 'Iridescent Form',
-                'description' => 'An abstract digital exploration of glass and light, designed for a luxury brand identity concept.',
-            ],
+            ['title' => 'Coastal Brutalism', 'description' => 'A stark, minimalist residential project overlooking the Mediterranean, focusing on raw concrete textures and geometric purity.'],
+            ['title' => 'The Monolith Interior', 'description' => 'Concept interior for a flagship gallery, utilizing dark walnut, polished Nero Marquina marble, and sculptural furniture.'],
+            ['title' => 'Iridescent Form', 'description' => 'An abstract digital exploration of glass and light, designed for a luxury brand identity concept.'],
         ];
 
-        $availableImages = [
-            ['name' => 'arch', 'file' => 'arch.png'],
-            ['name' => 'interior', 'file' => 'interior.png'],
-            ['name' => 'abstract', 'file' => 'abstract.png'],
-        ];
+        $images = ['arch.png', 'interior.png', 'abstract.png'];
 
         foreach ($samples as $sample) {
             $work = Work::updateOrCreate(
                 ['slug' => Str::slug($sample['title'])],
-                [
-                    'title' => $sample['title'],
-                    'description' => $sample['description'],
-                ]
+                ['title' => $sample['title'], 'description' => $sample['description']]
             );
 
-            // Create 7 media records per work
             for ($i = 0; $i < 7; $i++) {
-                $image = $availableImages[$i % count($availableImages)];
-
+                $img = $images[$i % count($images)];
                 Media::create([
                     'model_type' => Work::class,
                     'model_id' => $work->id,
                     'collection_name' => 'default',
-                    'name' => $image['name'],
-                    'file_name' => $image['file'],
+                    'name' => pathinfo($img, PATHINFO_FILENAME),
+                    'file_name' => $img,
                     'mime_type' => 'image/png',
                     'disk' => 'public',
                     'size' => 0,

@@ -18,7 +18,7 @@ class WorkRepository
     public function getAllActive(): Collection
     {
         return Cache::remember(self::CACHE_KEY, self::CACHE_TTL, function (): Collection {
-            return Work::with('media')->latest()->get();
+            return Work::latest()->get();
         });
     }
 
@@ -27,7 +27,7 @@ class WorkRepository
      */
     public function getPaginated(int $perPage = 12): LengthAwarePaginator
     {
-        return Work::with('media')->latest()->paginate($perPage);
+        return Work::latest()->paginate($perPage);
     }
 
     /**
@@ -35,7 +35,7 @@ class WorkRepository
      */
     public function findBySlug(string $slug): ?Work
     {
-        return Work::where('slug', $slug)->with('media')->first();
+        return Work::where('slug', $slug)->first();
     }
 
     /**
