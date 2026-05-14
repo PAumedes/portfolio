@@ -12,7 +12,7 @@ class WorkPolicy
      */
     public function viewAny(User $user): bool
     {
-        return true;
+        return $user->isAdmin();
     }
 
     /**
@@ -20,7 +20,7 @@ class WorkPolicy
      */
     public function view(User $user, Work $work): bool
     {
-        return true;
+        return $user->isAdmin();
     }
 
     /**
@@ -28,7 +28,7 @@ class WorkPolicy
      */
     public function create(User $user): bool
     {
-        return true;
+        return $user->isAdmin();
     }
 
     /**
@@ -36,7 +36,7 @@ class WorkPolicy
      */
     public function update(User $user, Work $work): bool
     {
-        return true;
+        return $user->isAdmin();
     }
 
     /**
@@ -44,7 +44,7 @@ class WorkPolicy
      */
     public function delete(User $user, Work $work): bool
     {
-        return true;
+        return $user->isAdmin();
     }
 
     /**

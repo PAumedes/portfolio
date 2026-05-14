@@ -4,7 +4,11 @@ import { ref, computed } from 'vue';
 import Footer from '@/Components/Footer.vue';
 
 const props = defineProps({
-    work: Object,
+    work: {
+        type: Object,
+        required: true,
+        validator: (work) => work.id && work.title && Array.isArray(work.media),
+    },
 });
 
 const selectedImageIndex = ref(0);
@@ -46,11 +50,13 @@ const selectedImage = computed(() =>
             </div>
 
             <!-- Thumbnails -->
-            <div v-if="props.work.media.length > 1" class="grid grid-cols-4 md:grid-cols-6 gap-2 md:gap-4">
+            <div v-if="props.work.media.length > 1" class="grid grid-cols-4 md:grid-cols-6 gap-2 md:gap-4" role="region" aria-label="Image gallery thumbnails">
                 <button
                     v-for="(media, index) in props.work.media"
                     :key="media.id"
                     @click="selectedImageIndex = index"
+                    :aria-label="`View image ${index + 1} of ${props.work.media.length}`"
+                    :aria-pressed="selectedImageIndex === index"
                     :class="[
                         'overflow-hidden rounded-lg border-2 transition-all duration-300',
                         selectedImageIndex === index

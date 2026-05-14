@@ -2,33 +2,21 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Work;
-use Illuminate\Support\Facades\Cache;
+use App\Repositories\WorkRepository;
+use App\Transformers\MediaTransformer;
 use Inertia\Inertia;
 
 class PortfolioController extends Controller
 {
+    public function __construct(
+        private WorkRepository $workRepository
+    ) {}
+
     public function index()
     {
-        $works = Cache::remember('portfolio_works', 3600, function () {
-            return Work::with('media')->latest()->get()->map(function ($work) {
-                return [
-                    'id' => $work->id,
-                    'title' => $work->title,
-                    'slug' => $work->slug,
-                    'description' => $work->description,
-                    'media' => $work->getMedia('default')->map(function ($media) {
-                        return [
-                            'id' => $media->id,
-                            'thumb' => $media->getUrl('thumb'),
-                            'preview' => $media->getUrl('preview'),
-                            'preview_fallback' => $media->getUrl('preview_fallback'),
-                            'name' => $media->name,
-                        ];
-                    }),
-                ];
-            });
-        });
+        $works = $this->workRepository->getAllActive()->map(
+            fn($work) => $this->transformWork($work)
+        );
 
         return Inertia::render('PortfolioGrid', [
             'works' => $works,
@@ -37,26 +25,25 @@ class PortfolioController extends Controller
 
     public function show(string $slug)
     {
-        $work = Work::where('slug', $slug)->with('media')->firstOrFail();
+        $work = $this->workRepository->findBySlug($slug);
 
-        $workData = [
+        if (!$work) {
+            abort(404);
+        }
+
+        return Inertia::render('WorkDetail', [
+            'work' => $this->transformWork($work),
+        ]);
+    }
+
+    private function transformWork($work): array
+    {
+        return [
             'id' => $work->id,
             'title' => $work->title,
             'slug' => $work->slug,
             'description' => $work->description,
-            'media' => $work->getMedia('default')->map(function ($media) {
-                return [
-                    'id' => $media->id,
-                    'thumb' => $media->getUrl('thumb'),
-                    'preview' => $media->getUrl('preview'),
-                    'preview_fallback' => $media->getUrl('preview_fallback'),
-                    'name' => $media->name,
-                ];
-            }),
+            'media' => MediaTransformer::transformCollection($work->getMedia('default')),
         ];
-
-        return Inertia::render('WorkDetail', [
-            'work' => $workData,
-        ]);
     }
 }

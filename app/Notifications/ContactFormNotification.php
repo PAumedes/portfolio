@@ -41,7 +41,7 @@ class ContactFormNotification extends Notification implements ShouldQueue
             ->line('**Email:** ' . ($this->data['email'] ?? 'N/A'))
             ->line('**Message:**')
             ->line($this->data['message'] ?? 'No message content.')
-            ->action('View Admin Dashboard', url('/admin'))
+            ->action('View Admin Dashboard', route('admin.works.index'))
             ->line('Thank you for using your portfolio!');
     }
 

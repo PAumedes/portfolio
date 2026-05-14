@@ -4,21 +4,23 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Work;
+use App\Repositories\WorkRepository;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Str;
 use Inertia\Inertia;
 
 class WorkController extends Controller
 {
+    public function __construct(
+        private WorkRepository $workRepository
+    ) {}
+
     public function index()
     {
         $this->authorize('viewAny', Work::class);
 
-        $works = Work::with('media')->latest()->get();
-
         return Inertia::render('Admin/Works/Index', [
-            'works' => $works,
+            'works' => $this->workRepository->getPaginated(12),
         ]);
     }
 
@@ -48,8 +50,6 @@ class WorkController extends Controller
         if ($request->hasFile('image')) {
             $work->addMediaFromRequest('image')->toMediaCollection('default');
         }
-
-        Cache::forget('portfolio_works');
 
         return redirect()->route('admin.works.index')->with('success', 'Work created successfully.');
     }
@@ -84,8 +84,6 @@ class WorkController extends Controller
             $work->addMediaFromRequest('image')->toMediaCollection('default');
         }
 
-        Cache::forget('portfolio_works');
-
         return redirect()->route('admin.works.index')->with('success', 'Work updated successfully.');
     }
 
@@ -95,8 +93,6 @@ class WorkController extends Controller
 
         $work->clearMediaCollection('default');
         $work->delete();
-
-        Cache::forget('portfolio_works');
 
         return redirect()->route('admin.works.index')->with('success', 'Work deleted successfully.');
     }

@@ -4,7 +4,11 @@ import { useReveal } from '@/Composables/useReveal';
 import Footer from '@/Components/Footer.vue';
 
 defineProps({
-    works: Object,
+    works: {
+        type: Array,
+        required: true,
+        validator: (works) => Array.isArray(works) && works.every(w => w.id && w.title && w.slug),
+    },
 });
 
 const { galleryRefs } = useReveal();

@@ -2,6 +2,9 @@
 
 namespace App\Models;
 
+use App\Events\WorkCreated;
+use App\Events\WorkDeleted;
+use App\Events\WorkUpdated;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Spatie\MediaLibrary\HasMedia;
@@ -14,6 +17,12 @@ class Work extends Model implements HasMedia
 
     protected $fillable = ['title', 'slug', 'description'];
 
+    protected $dispatchesEvents = [
+        'created' => WorkCreated::class,
+        'updated' => WorkUpdated::class,
+        'deleted' => WorkDeleted::class,
+    ];
+
     public function registerMediaConversions(?Media $media = null): void
     {
         $this->addMediaConversion('thumb')
@@ -25,7 +34,7 @@ class Work extends Model implements HasMedia
              ->width(1600)
              ->format('avif')
              ->nonQueued();
-             
+
         $this->addMediaConversion('preview_fallback')
              ->width(1600)
              ->format('webp')

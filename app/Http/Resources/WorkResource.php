@@ -2,16 +2,12 @@
 
 namespace App\Http\Resources;
 
+use App\Transformers\MediaTransformer;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 class WorkResource extends JsonResource
 {
-    /**
-     * Transform the resource into an array.
-     *
-     * @return array<string, mixed>
-     */
     public function toArray(Request $request): array
     {
         return [
@@ -19,8 +15,7 @@ class WorkResource extends JsonResource
             'title' => $this->title,
             'slug' => $this->slug,
             'description' => $this->description,
-            'thumbnail' => $this->getFirstMediaUrl('images', 'thumb'),
-            'preview' => $this->getFirstMediaUrl('images', 'preview'),
+            'media' => MediaTransformer::transformCollection($this->getMedia('default')),
         ];
     }
 }
