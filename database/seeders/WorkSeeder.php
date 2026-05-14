@@ -42,22 +42,32 @@ class WorkSeeder extends Seeder
                 ]
             );
 
-            // Clear existing media and attach 7 images
+            // Clear existing media
             $work->clearMediaCollection('default');
 
-            // Attach 7 images (cycle through available images)
+            // Create 7 media records in the database (without actual files)
             for ($i = 0; $i < 7; $i++) {
                 $imageName = $availableImages[$i % count($availableImages)];
-                $imagePath = public_path('samples/' . $imageName);
 
-                if (file_exists($imagePath)) {
-                    try {
-                        $work->addMedia($imagePath)
-                             ->preservingOriginal()
-                             ->toMediaCollection('default');
-                    } catch (\Exception $e) {
-                        \Illuminate\Support\Facades\Log::warning("Failed to attach media for work {$work->id}: " . $e->getMessage());
-                    }
+                try {
+                    // Create database record directly without file upload
+                    \Spatie\MediaLibrary\MediaCollections\Models\Media::create([
+                        'model_type' => 'App\\Models\\Work',
+                        'model_id' => $work->id,
+                        'collection_name' => 'default',
+                        'name' => pathinfo($imageName, PATHINFO_FILENAME),
+                        'file_name' => $imageName,
+                        'mime_type' => 'image/jpeg',
+                        'disk' => 'public',
+                        'size' => 0,
+                        'manipulations' => json_encode([]),
+                        'custom_properties' => json_encode([]),
+                        'generated_conversions' => json_encode(['thumb' => true, 'preview' => true, 'preview_fallback' => true]),
+                        'responsive_images' => json_encode([]),
+                        'order_column' => $i + 1,
+                    ]);
+                } catch (\Exception $e) {
+                    \Illuminate\Support\Facades\Log::warning("Failed to create media record for work {$work->id}: " . $e->getMessage());
                 }
             }
         }
