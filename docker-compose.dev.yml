@@ -8,10 +8,14 @@ services:
     volumes:
       - .:/var/www/html
     user: "${PUID:-1000}:${PGID:-1000}"
-    # command: ["php", "artisan", "octane:start", "--server=frankenphp", "--host=0.0.0.0", "--port=8000", "--watch"]
     environment:
       - APP_DEBUG=true
     command: ["php", "artisan", "octane:start", "--server=frankenphp", "--host=0.0.0.0", "--port=8000"]
+    deploy:
+      resources:
+        limits:
+          cpus: '2'
+          memory: 2048M
 
   web:
     ports:
@@ -33,3 +37,8 @@ services:
       - portfolio_network
     security_opt:
       - no-new-privileges:true
+    deploy:
+      resources:
+        limits:
+          cpus: '2'
+          memory: 1024M
