@@ -1,29 +1,14 @@
 <script setup>
-import { onMounted, ref } from 'vue';
-import { Head } from '@inertiajs/vue3';
+import { Head, Link } from '@inertiajs/vue3';
+import { useReveal } from '@/Composables/useReveal';
 
 defineProps({
-    works: Array,
+    works: Object, // Inertia returns Resources as objects with a 'data' key
 });
 
-const galleryRefs = ref([]);
-
-onMounted(() => {
-    const observer = new IntersectionObserver((entries) => {
-        entries.forEach((entry) => {
-            if (entry.isIntersecting) {
-                entry.target.classList.add('reveal-active');
-            }
-        });
-    }, {
-        threshold: 0.1,
-    });
-
-    galleryRefs.value.forEach((el) => {
-        if (el) observer.observe(el);
-    });
-});
+const { galleryRefs } = useReveal();
 </script>
+
 
 <template>
     <Head title="Portfolio">
@@ -34,7 +19,7 @@ onMounted(() => {
     <div class="min-h-screen bg-zinc-950 p-4 md:p-12">
         <div class="masonry-grid max-w-7xl mx-auto gap-px bg-zinc-800 border border-zinc-800">
             <article 
-                v-for="(work, index) in works" 
+                v-for="(work, index) in works.data" 
                 :key="work.id"
                 ref="galleryRefs"
                 class="masonry-item reveal-item relative overflow-hidden bg-zinc-950"
@@ -56,8 +41,19 @@ onMounted(() => {
                 </div>
             </article>
         </div>
+
+        <Link 
+            :href="route('contact.show')"
+            class="fixed bottom-8 right-8 z-50 group flex items-center gap-3 px-6 py-4 bg-white text-zinc-950 rounded-full shadow-2xl hover:scale-105 transition-all duration-500"
+        >
+            <span class="text-sm font-medium tracking-wide uppercase">Get in touch</span>
+            <div class="w-8 h-8 rounded-full bg-zinc-950 text-white flex items-center justify-center group-hover:rotate-45 transition-transform duration-500">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 7-7 7 7"/><path d="M12 19V5"/></svg>
+            </div>
+        </Link>
     </div>
 </template>
+
 
 <style scoped>
 .masonry-grid {

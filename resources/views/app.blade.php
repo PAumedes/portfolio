@@ -9,6 +9,7 @@
         <!-- Satoshi Font from Fontshare -->
         <link href="https://api.fontshare.com/v2/css?f[]=satoshi@900,700,500,300,400&display=swap" rel="stylesheet">
         
+        @routes
         @vite(['resources/css/app.css', 'resources/js/app.js'])
         @inertiaHead
     </head>

@@ -39,3 +39,6 @@ jobs:
 
       - name: Run Prettier check
         run: npx prettier --check "resources/js/**/*.{js,vue}"
+
+      - name: Run Pest Tests (Backend Testing)
+        run: php artisan test --parallel

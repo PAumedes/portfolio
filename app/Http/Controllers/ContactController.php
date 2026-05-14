@@ -3,10 +3,15 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\ContactRequest;
+use App\Services\ContactService;
 use Inertia\Inertia;
 
 class ContactController extends Controller
 {
+    public function __construct(
+        protected ContactService $service
+    ) {}
+
     /**
      * Display the contact form page.
      */
@@ -17,14 +22,12 @@ class ContactController extends Controller
 
     /**
      * Handle the incoming contact request.
-     *
-     * We use a dedicated FormRequest to ensure data integrity and clean controllers.
      */
     public function store(ContactRequest $request)
     {
-        // Logic to dispatch an email or save to DB goes here.
-        // Returning back with a flash message upon successful validation.
+        $this->service->handleMessage($request->validated());
         
         return redirect()->back()->with('success', 'Thank you for your message. I will be in touch shortly.');
     }
 }
+
