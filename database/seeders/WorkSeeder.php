@@ -42,9 +42,14 @@ class WorkSeeder extends Seeder
 
             // Attach image if not already attached
             if ($work->getMedia('default')->isEmpty() && file_exists(public_path('samples/' . $sample['image']))) {
-                $work->addMedia(public_path('samples/' . $sample['image']))
-                     ->preservingOriginal()
-                     ->toMediaCollection('default');
+                try {
+                    $work->addMedia(public_path('samples/' . $sample['image']))
+                         ->preservingOriginal()
+                         ->toMediaCollection('default');
+                } catch (\Exception $e) {
+                    // Log media attachment failure but don't fail the seeder
+                    \Illuminate\Support\Facades\Log::warning("Failed to attach media for work {$work->id}: " . $e->getMessage());
+                }
             }
         }
     }

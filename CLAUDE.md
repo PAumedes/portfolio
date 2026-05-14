@@ -19,13 +19,29 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 All commands run inside Docker containers. The dev stack is composed of two files:
 
 ```bash
-# Start dev environment
+# First-time setup (builds images, creates containers, runs migrations/seeds)
 docker compose -f docker-compose.yml -f docker-compose.dev.yml up -d --build
+docker compose -f docker-compose.yml -f docker-compose.dev.yml exec app php artisan migrate
+docker compose -f docker-compose.yml -f docker-compose.dev.yml exec app php artisan db:seed
 
-# App runs on :8080 (Nginx → Octane :8000). Vite HMR on :5173.
+# Regular development (NO --build flag needed for code changes)
+docker compose -f docker-compose.yml -f docker-compose.dev.yml up -d
+
+# Restart app after .env or config/ changes (Octane keeps app in memory)
+docker compose -f docker-compose.yml -f docker-compose.dev.yml restart app
 ```
 
-**Important:** Laravel Octane keeps the app bootstrapped in memory. After any `.env` or `config/` change you **must** restart the app container:
+**Hot Reload (Automatic):**
+- **PHP code changes:** Reloaded automatically by Octane (file watching)
+- **Vue components:** Hot Module Replacement via Vite on :5173
+- **No container recreation needed** for code changes — only for dependency upgrades
+
+**When to rebuild (`--build`):**
+- Added/changed PHP packages in `composer.json`
+- Added/changed npm packages in `package.json`
+- Modified Dockerfile or Docker configuration
+
+**Important:** Laravel Octane keeps the app bootstrapped in memory. After `.env` or `config/` changes you **must** restart the app container:
 
 ```bash
 docker compose restart app
