@@ -31,7 +31,7 @@ const { galleryRefs } = useReveal();
                 class="masonry-item reveal-item relative overflow-hidden bg-zinc-950 group focus-within:ring-2 focus-within:ring-white focus-within:ring-offset-2 focus-within:ring-offset-zinc-950"
             >
                 <Link
-                    :href="route('work.show', work.slug)"
+                    :href="route('project.show', work.slug)"
                     class="relative h-full block"
                     :aria-label="`View ${work.title} project`"
                 >

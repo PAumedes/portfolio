@@ -8,9 +8,8 @@ use App\Http\Controllers\Admin\WorkController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', [PortfolioController::class, 'index'])->name('portfolio.index');
-Route::get('/work/{slug}', [PortfolioController::class, 'show'])->name('work.show');
+Route::get('/project/{slug}', [PortfolioController::class, 'show'])->name('project.show');
 Route::get('/about', [PageController::class, 'about'])->name('about');
-Route::get('/portfolio', [PortfolioController::class, 'index'])->name('portfolio.index');
 
 Route::get('/contact', [ContactController::class, 'show'])->name('contact.show');
 Route::post('/contact', [ContactController::class, 'store'])->name('contact.store');
