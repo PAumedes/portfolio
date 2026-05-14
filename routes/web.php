@@ -25,10 +25,10 @@ Route::middleware('auth')->group(function () {
     Route::post('logout', [LoginController::class, 'destroy'])->name('logout');
 
     Route::prefix('admin')->name('admin.')->group(function () {
-        Route::get('works', [WorkController::class, 'index'])->name('works.index');
-        Route::get('works/create', [WorkController::class, 'create'])->name('works.create');
-        Route::post('works', [WorkController::class, 'store'])->name('works.store');
-        
+        Route::resource('works', WorkController::class, [
+            'only' => ['index', 'create', 'store', 'edit', 'update', 'destroy']
+        ]);
+
         // Notifications
         Route::get('notifications', [\App\Http\Controllers\Admin\NotificationController::class, 'index'])->name('notifications.index');
         Route::post('notifications/{id}/read', [\App\Http\Controllers\Admin\NotificationController::class, 'markAsRead'])->name('notifications.read');
