@@ -1,4 +1,4 @@
-FROM dunglas/frankenphp:php8.3
+FROM dunglas/frankenphp:php8.3 AS base
 
 ENV COMPOSER_ALLOW_SUPERUSER=1
 
@@ -17,23 +17,33 @@ RUN install-php-extensions \
 
 WORKDIR /var/www/html
 
-# Copy the entire project for production builds.
-# Using --chown optimizes the Docker image layers by preventing double storage of the files.
-COPY --chown=www-data:www-data . /var/www/html
+# Development stage
+FROM base AS development
+
+RUN chown -R www-data:www-data /var/www/html
 
 USER www-data
 
-# Install Composer dependencies for production
-RUN composer install --no-dev --optimize-autoloader --no-interaction --no-scripts || true
-
-# Clear service provider cache since some dev packages aren't installed
-RUN rm -f /var/www/html/bootstrap/cache/*.php
-
-# Add a HEALTHCHECK to let Docker know when Octane is ready and responsive.
 HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \
     CMD curl -f http://localhost:8000/up || exit 1
 
 EXPOSE 8000
 
-# Start Octane with FrankenPHP by default (for production).
+CMD ["php", "artisan", "octane:start", "--server=frankenphp", "--host=0.0.0.0", "--port=8000"]
+
+# Production stage
+FROM base AS production
+
+COPY --chown=www-data:www-data . /var/www/html
+
+USER www-data
+
+RUN composer install --no-dev --optimize-autoloader --no-interaction --no-scripts || true
+RUN rm -f /var/www/html/bootstrap/cache/*.php
+
+HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \
+    CMD curl -f http://localhost:8000/up || exit 1
+
+EXPOSE 8000
+
 CMD ["php", "artisan", "octane:start", "--server=frankenphp", "--host=0.0.0.0", "--port=8000"]

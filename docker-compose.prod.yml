@@ -1,16 +1,11 @@
-version: '3.8'
-
 services:
   app:
     build:
-      context: .
-      dockerfile: docker/app/Dockerfile
+      target: production
     environment:
       - APP_ENV=production
       - APP_DEBUG=false
-    depends_on:
-      - db
-      - redis
+    restart: unless-stopped
     deploy:
       resources:
         limits:
@@ -19,18 +14,12 @@ services:
         reservations:
           cpus: '1'
           memory: 512M
-    restart: unless-stopped
-    healthcheck:
-      test: ['CMD', 'curl', '-f', 'http://localhost:8000/up']
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 40s
 
   web:
     ports:
       - "80:80"
       - "443:443"
+    restart: unless-stopped
     deploy:
       resources:
         limits:
@@ -39,17 +28,15 @@ services:
         reservations:
           cpus: '0.5'
           memory: 128M
-    restart: unless-stopped
-    depends_on:
-      - app
 
   db:
-    image: mysql:8.0
-    environment:
-      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
-      MYSQL_DATABASE: ${DB_DATABASE}
-      MYSQL_USER: ${DB_USERNAME}
-      MYSQL_PASSWORD: ${DB_PASSWORD}
+    restart: unless-stopped
+    healthcheck:
+      test: ['CMD', 'mysqladmin', 'ping', '-h', 'localhost']
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
     volumes:
       - db_prod:/var/lib/mysql
     deploy:
@@ -60,17 +47,15 @@ services:
         reservations:
           cpus: '0.5'
           memory: 256M
+
+  redis:
     restart: unless-stopped
     healthcheck:
-      test: ['CMD', 'mysqladmin', 'ping', '-h', 'localhost']
+      test: ['CMD', 'redis-cli', 'ping']
       interval: 30s
       timeout: 10s
       retries: 3
       start_period: 40s
-
-  redis:
-    build:
-      context: ./docker/redis
     deploy:
       resources:
         limits:
@@ -79,13 +64,6 @@ services:
         reservations:
           cpus: '0.25'
           memory: 128M
-    restart: unless-stopped
-    healthcheck:
-      test: ['CMD', 'redis-cli', 'ping']
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 40s
 
   node:
     build:
