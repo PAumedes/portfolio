@@ -65,10 +65,12 @@ docker exec portfolio_node npm install
 
 ### 4. Open Your Browser
 
-- **Portfolio**: http://localhost:8080
-- **Admin**: http://localhost:8080/admin
+- **Portfolio**: http://localhost:8000
+- **Admin**: http://localhost:8000/admin
 
 Done! Edit files and refresh to see changes (hot reload works automatically).
+
+**Note for WSL2 users**: Use port 8000 (direct app access). Port 8080 (nginx) has networking issues in WSL2.
 
 ## Common Commands
 
@@ -184,7 +186,7 @@ No API. No JSON. Just direct server-to-browser rendering with Inertia.js.
 
 ## Admin Panel
 
-Go to `/admin` to manage:
+Go to http://localhost:8000/admin to manage:
 - Projects (works) and their images
 - Contact form submissions
 - Notifications
