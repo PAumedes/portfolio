@@ -1,13 +1,8 @@
-FROM ubuntu:24.04
+FROM nginx:1.27-alpine
 
-ENV DEBIAN_FRONTEND=noninteractive
-
-RUN apt-get update && apt-get install -y nginx \
-    && apt-get clean \
-    && rm -rf /var/lib/apt/lists/*
-
-COPY default.conf /etc/nginx/sites-available/default
+COPY default.conf /etc/nginx/conf.d/default.conf
 
 EXPOSE 80
 
-CMD ["nginx", "-g", "daemon off;"]
+HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \
+    CMD wget --quiet --tries=1 --spider http://localhost/health || exit 1

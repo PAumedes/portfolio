@@ -1,11 +1,8 @@
-FROM ubuntu:24.04
-
-ENV DEBIAN_FRONTEND=noninteractive
-
-RUN apt-get update && apt-get install -y redis-server \
-    && apt-get clean \
-    && rm -rf /var/lib/apt/lists/*
+FROM redis:7-alpine
 
 EXPOSE 6379
 
-CMD ["redis-server", "--protected-mode", "yes"]
+HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \
+    CMD redis-cli ping
+
+CMD ["redis-server", "--requirepass", "${REDIS_PASSWORD:-portfolio_redis_dev_password}", "--protected-mode", "yes"]

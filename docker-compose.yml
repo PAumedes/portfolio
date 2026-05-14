@@ -36,6 +36,12 @@ services:
       - app
     security_opt:
       - no-new-privileges:true
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost/health || exit 1"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
     deploy:
       resources:
         limits:
@@ -72,10 +78,18 @@ services:
     build:
       context: ./docker/redis
     container_name: ${APP_NAME:-portfolio}_redis
+    environment:
+      REDIS_PASSWORD: ${REDIS_PASSWORD}
     networks:
       - portfolio_network
     security_opt:
       - no-new-privileges:true
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
     deploy:
       resources:
         limits:

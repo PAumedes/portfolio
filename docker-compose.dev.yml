@@ -7,10 +7,24 @@ services:
     user: "${PUID:-1000}:${PGID:-1000}"
     environment:
       - APP_DEBUG=true
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/up"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
 
   web:
     volumes:
       - .:/var/www/html
+
+  db:
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
 
   node:
     build:
