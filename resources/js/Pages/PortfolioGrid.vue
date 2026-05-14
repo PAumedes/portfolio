@@ -26,13 +26,10 @@ const { galleryRefs } = useReveal();
                 ref="galleryRefs"
                 class="masonry-item reveal-item relative overflow-hidden bg-zinc-950 group focus-within:ring-2 focus-within:ring-white focus-within:ring-offset-2 focus-within:ring-offset-zinc-950"
             >
-                <div
-                    class="relative h-full cursor-pointer"
-                    role="link"
-                    tabindex="0"
+                <Link
+                    :href="route('work.show', work.slug)"
+                    class="relative h-full block"
                     :aria-label="`View ${work.title} project`"
-                    @click="$router.visit(route('work.show', work.slug))"
-                    @keydown.enter="$router.visit(route('work.show', work.slug))"
                 >
                     <picture v-if="work.media && work.media.length > 0" class="block">
                         <source :srcset="work.media[0].preview" type="image/avif" />
@@ -49,7 +46,7 @@ const { galleryRefs } = useReveal();
                         <h2 class="text-white text-xl font-medium">{{ work.title }}</h2>
                         <p class="text-zinc-300 text-sm mt-1">{{ work.description }}</p>
                     </div>
-                </div>
+                </Link>
             </article>
         </div>
 
