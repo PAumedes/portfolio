@@ -26,6 +26,9 @@ USER www-data
 # Install Composer dependencies for production
 RUN composer install --no-dev --optimize-autoloader --no-interaction --no-scripts || true
 
+# Clear service provider cache since some dev packages aren't installed
+RUN rm -f /var/www/html/bootstrap/cache/*.php
+
 # Add a HEALTHCHECK to let Docker know when Octane is ready and responsive.
 HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \
     CMD curl -f http://localhost:8000/up || exit 1

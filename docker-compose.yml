@@ -2,6 +2,9 @@ version: '3.8'
 
 services:
   app:
+    build:
+      context: .
+      dockerfile: docker/app/Dockerfile
     container_name: ${APP_NAME:-portfolio}_app
     ports:
       - "8000:8000"
@@ -27,6 +30,8 @@ services:
     build:
       context: ./docker/web
     container_name: ${APP_NAME:-portfolio}_web
+    ports:
+      - "8080:80"
     networks:
       - portfolio_network
     depends_on:
