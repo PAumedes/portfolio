@@ -17,19 +17,21 @@ class WorkSeeder extends Seeder
             [
                 'title' => 'Coastal Brutalism',
                 'description' => 'A stark, minimalist residential project overlooking the Mediterranean, focusing on raw concrete textures and geometric purity.',
-                'image' => 'arch.png',
+                'images' => ['arch.png', 'interior.png', 'abstract.png'],
             ],
             [
                 'title' => 'The Monolith Interior',
                 'description' => 'Concept interior for a flagship gallery, utilizing dark walnut, polished Nero Marquina marble, and sculptural furniture.',
-                'image' => 'interior.png',
+                'images' => ['interior.png', 'abstract.png', 'arch.png'],
             ],
             [
                 'title' => 'Iridescent Form',
                 'description' => 'An abstract digital exploration of glass and light, designed for a luxury brand identity concept.',
-                'image' => 'abstract.png',
+                'images' => ['abstract.png', 'arch.png', 'interior.png'],
             ],
         ];
+
+        $availableImages = ['arch.png', 'interior.png', 'abstract.png'];
 
         foreach ($samples as $sample) {
             $work = Work::updateOrCreate(
@@ -40,15 +42,22 @@ class WorkSeeder extends Seeder
                 ]
             );
 
-            // Attach image if not already attached
-            if ($work->getMedia('default')->isEmpty() && file_exists(public_path('samples/' . $sample['image']))) {
-                try {
-                    $work->addMedia(public_path('samples/' . $sample['image']))
-                         ->preservingOriginal()
-                         ->toMediaCollection('default');
-                } catch (\Exception $e) {
-                    // Log media attachment failure but don't fail the seeder
-                    \Illuminate\Support\Facades\Log::warning("Failed to attach media for work {$work->id}: " . $e->getMessage());
+            // Clear existing media and attach 7 images
+            $work->clearMediaCollection('default');
+
+            // Attach 7 images (cycle through available images)
+            for ($i = 0; $i < 7; $i++) {
+                $imageName = $availableImages[$i % count($availableImages)];
+                $imagePath = public_path('samples/' . $imageName);
+
+                if (file_exists($imagePath)) {
+                    try {
+                        $work->addMedia($imagePath)
+                             ->preservingOriginal()
+                             ->toMediaCollection('default');
+                    } catch (\Exception $e) {
+                        \Illuminate\Support\Facades\Log::warning("Failed to attach media for work {$work->id}: " . $e->getMessage());
+                    }
                 }
             }
         }
