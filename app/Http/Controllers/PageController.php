@@ -2,16 +2,23 @@
 
 namespace App\Http\Controllers;
 
+use Inertia\Response;
 use Inertia\Inertia;
 
 class PageController extends Controller
 {
-    public function home()
+    /**
+     * Display the home page.
+     */
+    public function home(): Response
     {
         return Inertia::render('Home');
     }
 
-    public function about()
+    /**
+     * Display the about page with biography and approach.
+     */
+    public function about(): Response
     {
         return Inertia::render('About');
     }

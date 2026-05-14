@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Repositories\WorkRepository;
 use App\Transformers\MediaTransformer;
 use Inertia\Inertia;
+use Inertia\Response;
 
 class PortfolioController extends Controller
 {
@@ -12,7 +13,10 @@ class PortfolioController extends Controller
         private WorkRepository $workRepository
     ) {}
 
-    public function index()
+    /**
+     * Display the portfolio grid with all works.
+     */
+    public function index(): Response
     {
         $works = $this->workRepository->getAllActive()->map(
             fn($work) => $this->transformWork($work)
@@ -23,7 +27,10 @@ class PortfolioController extends Controller
         ]);
     }
 
-    public function show(string $slug)
+    /**
+     * Display a single work with its details and image gallery.
+     */
+    public function show(string $slug): Response
     {
         $work = $this->workRepository->findBySlug($slug);
 
@@ -36,6 +43,12 @@ class PortfolioController extends Controller
         ]);
     }
 
+    /**
+     * Transform work model to array for Inertia response.
+     *
+     * @param  \App\Models\Work  $work
+     * @return array{id: int, title: string, slug: string, description: string, media: array}
+     */
     private function transformWork($work): array
     {
         return [
