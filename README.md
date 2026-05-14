@@ -1,250 +1,208 @@
 # Portfolio
 
-A high-end, minimalist portfolio application showcasing projects with elegant image galleries, built with Laravel 13, Vue 3, Inertia.js, and fully containerized with Docker.
+A minimalist portfolio application with elegant image galleries, built with Laravel 13, Vue 3, and Docker.
 
-## Features
+## What This Is
 
-✨ **Core Portfolio Features**
-- **Multi-Image Project Galleries**: Behance-style galleries with multiple images per project
-- **Click-to-View Details**: Elegant project detail pages with full-resolution images
-- **Optimized Image Delivery**: Automatic AVIF/WebP conversion with responsive fallbacks via Spatie MediaLibrary
-- **About Section**: Dedicated page with biography and professional approach
-- **Contact Form**: Seamless contact submission with email notifications and database storage
-- **Minimal Social Footer**: Icon-only social links (Instagram, Behance) with clean design
+A clean, professional portfolio that displays your work with:
+- Multi-image galleries for each project (like Behance)
+- Click to view full project details
+- About page with your story
+- Contact form with notifications
+- Social media links (minimal footer)
+- Fast performance with optimized images (AVIF/WebP)
 
-🏗️ **Technical Highlights**
-- **Laravel Octane**: High-performance framework with in-memory bootstrapping
-- **Vue 3 + Inertia.js**: Server-side routing without API complexity
-- **TailwindCSS v4**: Utility-first styling with Satoshi font
-- **Spatie MediaLibrary**: Image management with automatic conversions (AVIF, WebP, thumbnails)
-- **Admin Dashboard**: Content management for works and notifications
+## Tech Stack
 
-🔒 **Security & Infrastructure**
-- **Session Encryption**: Secure session handling with encrypted cookies
-- **Redis Authentication**: Password-protected cache layer
-- **Security Headers**: HSTS, X-Frame-Options, CSP, and more
-- **Multi-Stage Docker Builds**: Optimized images for development and production
-- **Health Checks**: All services monitored for availability
-- **Non-Root Containers**: All services run as unprivileged users
-
-## Technology Stack
-
-- **Backend**: Laravel 13 with Laravel Octane (PHP 8.3 + FrankenPHP)
-- **Frontend**: Vue 3 + Inertia.js + TailwindCSS v4 + Satoshi Font
+- **Backend**: Laravel 13 + Laravel Octane (PHP 8.3)
+- **Frontend**: Vue 3 + TailwindCSS v4
 - **Database**: MySQL 8
-- **Cache/Sessions**: Redis 7
-- **Media Storage**: Spatie MediaLibrary with S3-compatible storage (Cloudflare R2)
-- **Infrastructure**: Docker Compose with dev/prod/test environments
-- **CI/CD**: GitHub Actions with automated linting, testing, and Docker builds
+- **Cache**: Redis
+- **Everything**: Runs in Docker containers
 
 ## Requirements
 
-- **Docker Desktop** (Mac/Windows) OR **Docker Engine + Docker Compose** (Linux)
-- No local PHP, Node, or MySQL installation needed — everything runs in containers
+Just install Docker:
+- **Docker Desktop** (Mac/Windows)
+- **Docker + Docker Compose** (Linux)
 
-## Installation
+That's it. You don't need PHP, Node, or MySQL installed locally.
 
-### 1. Clone the Repository
+## Quick Start
+
+### 1. Get the Code
 
 ```bash
 git clone <repository-url>
 cd portfolio
 ```
 
-### 2. Set Up Environment Variables
+### 2. Start the Development Server
 
-Copy the provided `.env` file or create one with sensible defaults:
-
-```bash
-# The .env file is already configured with Docker-friendly defaults
-cat .env
-```
-
-Key environment variables for development:
-```
-APP_ENV=local
-APP_DEBUG=true
-DB_HOST=db
-REDIS_HOST=redis
-REDIS_PASSWORD=portfolio_redis_dev_password
-SESSION_ENCRYPT=true
-```
-
-### 3. Start the Development Environment
-
-For **first-time setup** (builds images and initializes the database):
-
+First time only:
 ```bash
 docker compose -f docker-compose.yml -f docker-compose.dev.yml up -d --build
 ```
 
-For **subsequent runs** (no rebuild needed):
-
+After that:
 ```bash
 docker compose -f docker-compose.yml -f docker-compose.dev.yml up -d
 ```
 
-### 4. Install Dependencies and Initialize
-
-Run these commands while the containers are running:
+### 3. Set Up the Database
 
 ```bash
-# Install PHP dependencies
-docker compose -f docker-compose.yml -f docker-compose.dev.yml exec app composer install
-
-# Generate application key
-docker compose -f docker-compose.yml -f docker-compose.dev.yml exec app php artisan key:generate
-
-# Run database migrations
-docker compose -f docker-compose.yml -f docker-compose.dev.yml exec app php artisan migrate
-
-# Seed sample data
-docker compose -f docker-compose.yml -f docker-compose.dev.yml exec app php artisan db:seed
+docker exec portfolio_app composer install
+docker exec portfolio_app php artisan key:generate
+docker exec portfolio_app php artisan migrate
+docker exec portfolio_app php artisan db:seed
 ```
 
-### 5. Install Frontend Assets
+### 4. Install Frontend Assets
 
 ```bash
-# Install npm dependencies
-docker compose -f docker-compose.yml -f docker-compose.dev.yml exec node npm install
-
-# Start dev server (Vite with hot reload)
-# The node service runs automatically with npm run dev
+docker exec portfolio_node npm install
 ```
 
-### 6. Access the Application
+The dev server starts automatically. You'll see hot reload working.
+
+### 5. Open Your Browser
 
 - **Portfolio**: http://localhost:8080
-- **Admin Panel**: http://localhost:8080/admin (requires login)
-- **Vite Dev Server**: http://localhost:5173 (hot reload assets)
+- **Admin**: http://localhost:8080/admin
 
-## Development Workflow
+Done! Start editing files and refresh your browser to see changes.
 
-### Code Changes (Hot Reload)
+## Common Commands
 
-No container recreation needed for code changes:
+Run these from the project directory:
 
-- **PHP files**: Automatically reloaded by Octane
-- **Vue components**: Hot Module Replacement via Vite
-- **CSS**: Recompiled on save
+### Backend (PHP/Laravel)
 
-Simply edit files and refresh your browser.
+```bash
+# Run tests
+docker exec portfolio_app php artisan test --parallel
 
-### Configuration Changes
+# Run one test
+docker exec portfolio_app php artisan test --filter=testName
 
-After modifying `.env` or `config/` files, restart the app container:
+# Fix code formatting
+docker exec portfolio_app ./vendor/bin/pint
+
+# Run migrations
+docker exec portfolio_app php artisan migrate
+
+# Seed database
+docker exec portfolio_app php artisan db:seed
+```
+
+### Frontend (Vue/Node)
+
+```bash
+# Format code
+docker exec portfolio_node npm run format
+
+# Check for errors
+docker exec portfolio_node npm run lint
+
+# Build for production
+docker exec portfolio_node npm run build
+```
+
+### Database & Cache
+
+```bash
+# See what's in the database
+docker exec portfolio_db mysql -u portfolio_user -p${DB_PASSWORD} portfolio -e "SELECT * FROM works;"
+
+# Flush Redis cache
+docker exec portfolio_redis redis-cli flushall
+```
+
+## Development
+
+### Making Code Changes
+
+Just edit files. Your changes reload automatically:
+- **PHP files** → Reload automatically in Octane
+- **Vue files** → Hot reload in your browser
+- **CSS** → Recompile on save
+
+No container restart needed. Just refresh your browser.
+
+### After Changing Configuration
+
+If you modify `.env` or `config/` files, restart the app:
 
 ```bash
 docker compose -f docker-compose.yml -f docker-compose.dev.yml restart app
 ```
 
-### Dependency Changes
+### After Adding Packages
 
-When updating `composer.json` or `package.json`:
+If you update `composer.json` or `package.json`, rebuild:
 
 ```bash
 docker compose -f docker-compose.yml -f docker-compose.dev.yml up -d --build
 ```
 
-### Running Tests
+## Stop Everything
 
 ```bash
-# Run all tests
-docker compose -f docker-compose.yml -f docker-compose.dev.yml exec app php artisan test --parallel
-
-# Run specific test file
-docker compose -f docker-compose.yml -f docker-compose.dev.yml exec app php artisan test tests/Feature/PortfolioTest.php
-
-# Run tests matching a name
-docker compose -f docker-compose.yml -f docker-compose.dev.yml exec app php artisan test --filter=test_name
-```
-
-### Code Quality
-
-Before committing:
-
-```bash
-# Format PHP code (Laravel Pint)
-docker compose -f docker-compose.yml -f docker-compose.dev.yml exec app ./vendor/bin/pint
-
-# Lint and format Vue/JS
-docker compose -f docker-compose.yml -f docker-compose.dev.yml exec node npm run lint
-docker compose -f docker-compose.yml -f docker-compose.dev.yml exec node npm run format
-```
-
-## Stopping the Environment
-
-```bash
-# Stop all containers (preserves data)
+# Keep your database (just stop containers)
 docker compose -f docker-compose.yml -f docker-compose.dev.yml down
 
-# Stop and remove volumes (clears database)
+# Remove everything including database (fresh start)
 docker compose -f docker-compose.yml -f docker-compose.dev.yml down -v
 ```
 
-## Production Deployment
-
-For production, use the production override:
-
-```bash
-docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d --build
-```
-
-The production configuration includes:
-- Optimized resource limits (CPU/memory)
-- Disabled debug mode
-- Health checks for orchestration
-- Production-ready nginx configuration
-
-## Architecture
-
-### Request Flow
-
-```
-Browser → Nginx (reverse proxy) → Laravel Octane/FrankenPHP → Inertia → Vue (SPA)
-```
-
-**No separate API**: Inertia.js eliminates the need for a traditional REST API. Controllers return `Inertia::render()` with props, and Vue components receive them directly.
-
-### Project Structure
+## Project Structure
 
 ```
 portfolio/
-├── app/                          # Laravel application logic
-│   ├── Http/Controllers/         # Route handlers
-│   ├── Models/                   # Eloquent models
-│   ├── Services/                 # Business logic
-│   ├── Repositories/             # Data access with caching
-│   └── Notifications/            # Email/database notifications
-├── database/
-│   ├── migrations/               # Schema changes
-│   └── seeders/                  # Sample data
+├── app/                  # Backend logic (Models, Controllers, etc.)
 ├── resources/
-│   ├── js/Pages/                 # Vue page components
-│   ├── js/Components/            # Reusable Vue components
-│   ├── js/Composables/           # Vue composition functions
-│   ├── css/                      # TailwindCSS
-│   └── views/app.blade.php       # HTML entrypoint
-├── routes/web.php                # Application routes
-├── docker/                       # Dockerfiles & configs
-│   ├── app/Dockerfile            # PHP/Laravel
-│   ├── web/Dockerfile            # Nginx
-│   ├── redis/Dockerfile          # Redis
-│   └── node/Dockerfile           # Node.js build environment
-├── docker-compose.yml            # Main service definitions
-├── docker-compose.dev.yml        # Development overrides
-├── docker-compose.prod.yml       # Production overrides
-└── docker-compose.test.yml       # Testing environment
+│   ├── js/Pages/         # Vue pages
+│   ├── js/Components/    # Vue components
+│   └── css/              # Tailwind styles
+├── database/
+│   ├── migrations/       # Database schema
+│   └── seeders/          # Sample data
+├── docker/               # Dockerfile configs
+├── routes/web.php        # URL routes
+├── tests/                # Tests
+└── CLAUDE.md             # Developer notes
 ```
 
-## Important Notes
+## How It Works
 
-⚠️ **Octane Memory Management**: Because Octane bootstraps the Laravel application once and keeps it in memory, you **must restart the app container** after modifying `.env` or configuration files:
+1. User visits your portfolio at `http://localhost:8080`
+2. Nginx (web server) receives the request
+3. Laravel runs the request in Octane (very fast)
+4. Vue renders the page in the browser
+5. When you click a project, it shows the gallery with multiple images
+6. Images are automatically optimized (AVIF/WebP with fallbacks)
 
+No API. No JSON. Just direct server-to-browser rendering with Inertia.js.
+
+## Admin Panel
+
+Go to `/admin` to manage:
+- Projects (works) and their images
+- Contact form submissions
+- Notifications
+
+Login with your admin credentials.
+
+## Important
+
+⚠️ **After changing `.env` or config files**, restart the app:
 ```bash
 docker compose -f docker-compose.yml -f docker-compose.dev.yml restart app
 ```
 
-ℹ️ **Default User ID**: On Linux, containers run with your user ID (PUID/PGID) to prevent permission issues. The `.env` file detects this automatically.
+Octane keeps your app in memory for speed, so changes need a restart.
 
-📚 **Further Documentation**: See `CLAUDE.md` for detailed development guidelines, architecture decisions, and advanced usage.
+## Need Help?
+
+Check `CLAUDE.md` for detailed developer docs, testing, deployment, and architecture decisions.
