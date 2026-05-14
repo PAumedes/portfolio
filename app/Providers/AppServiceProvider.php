@@ -11,7 +11,11 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        //
+        // Ensure view cache path is configured before ViewServiceProvider runs
+        $this->app->make('config')->set('view', [
+            'paths' => [resource_path('views')],
+            'compiled' => storage_path('framework/views'),
+        ]);
     }
 
     /**
@@ -32,6 +36,11 @@ class AppServiceProvider extends ServiceProvider
         }
         if (!defined('SIGHUP')) {
             define('SIGHUP', 1);
+        }
+
+        // Ensure view cache path is set for Blade compiler
+        if (!config('view.compiled')) {
+            $this->app['config']['view.compiled'] = storage_path('framework/views');
         }
     }
 }
