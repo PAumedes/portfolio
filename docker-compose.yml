@@ -9,7 +9,6 @@ services:
     networks:
       - portfolio_network
     depends_on:
-      - db
       - redis
     env_file:
       - .env
@@ -51,29 +50,6 @@ services:
           cpus: '0.5'
           memory: 256M
 
-  db:
-    image: mysql:8.0
-    container_name: ${APP_NAME:-portfolio}_db
-    environment:
-      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
-      MYSQL_DATABASE: ${DB_DATABASE}
-      MYSQL_USER: ${DB_USERNAME}
-      MYSQL_PASSWORD: ${DB_PASSWORD}
-    volumes:
-      - db_data:/var/lib/mysql
-    networks:
-      - portfolio_network
-    security_opt:
-      - no-new-privileges:true
-    deploy:
-      resources:
-        limits:
-          cpus: '1'
-          memory: 768M
-        reservations:
-          cpus: '0.5'
-          memory: 384M
-
   redis:
     build:
       context: ./docker/redis
@@ -102,6 +78,3 @@ services:
 networks:
   portfolio_network:
     driver: bridge
-
-volumes:
-  db_data:

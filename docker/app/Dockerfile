@@ -12,7 +12,7 @@ FROM dunglas/frankenphp:php8.3 AS production
 ENV COMPOSER_ALLOW_SUPERUSER=1
 
 # Install PHP extensions required by dependencies
-RUN install-php-extensions exif pdo_mysql gd pcntl
+RUN install-php-extensions exif pdo_sqlite gd pcntl redis
 
 WORKDIR /var/www/html
 
@@ -36,17 +36,12 @@ FROM dunglas/frankenphp:php8.3 AS development
 ENV COMPOSER_ALLOW_SUPERUSER=1
 
 # Install PHP extensions required by dependencies
-RUN install-php-extensions exif pdo_mysql gd pcntl zip redis
+RUN install-php-extensions exif pdo_sqlite gd pcntl redis
 
-# Install development tools (fswatch for file watching, git for composer source downloads, unzip for archives)
+# Install fswatch for Octane file watching in development
 RUN apt-get update && apt-get install -y --no-install-recommends \
     fswatch \
-    git \
-    unzip \
     && rm -rf /var/lib/apt/lists/*
-
-# Install composer
-COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
 WORKDIR /var/www/html
 
