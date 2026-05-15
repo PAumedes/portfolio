@@ -47,6 +47,35 @@ docker compose -f docker-compose.yml -f docker-compose.dev.yml restart app
 docker compose restart app
 ```
 
+### First-Time Setup (Permissions)
+
+On first setup, create the cache/log directories with proper permissions:
+
+```bash
+mkdir -p storage/logs storage/framework/{cache,views} bootstrap/cache
+chmod 755 storage bootstrap
+chmod 775 storage/logs storage/framework/{cache,views} bootstrap/cache
+```
+
+**Why:** Docker runs the app as `uid 1000` (your user) via `docker-compose.dev.yml`. These directories must be writable by your user for Octane's file state tracking and Laravel's cache/logs. The directories are gitignored so they won't be committed.
+
+### Using Make Commands (Recommended)
+
+Instead of typing long docker-compose commands, use the `Makefile`:
+
+```bash
+make up              # Start containers
+make down            # Stop containers
+make build           # Rebuild images
+make restart         # Restart app (after .env changes)
+make logs            # Tail app logs
+make shell           # Open bash in app container
+make test            # Run tests
+make pint            # Fix PHP style
+make migrate         # Run migrations
+make seed            # Seed database
+```
+
 ## Project Structure
 
 ```

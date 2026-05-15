@@ -27,17 +27,6 @@ class AppServiceProvider extends ServiceProvider
         // This is a known FrankenPHP quirk that's safe to ignore in both dev and production.
         error_reporting(error_reporting() & ~E_WARNING);
 
-        // Define POSIX signal constants for Octane/FrankenPHP compatibility
-        if (!defined('SIGINT')) {
-            define('SIGINT', 2);
-        }
-        if (!defined('SIGTERM')) {
-            define('SIGTERM', 15);
-        }
-        if (!defined('SIGHUP')) {
-            define('SIGHUP', 1);
-        }
-
         // Ensure view cache path is set for Blade compiler
         if (!config('view.compiled')) {
             $this->app['config']['view.compiled'] = storage_path('framework/views');
